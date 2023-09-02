@@ -9,6 +9,8 @@ const currentProgress = document.getElementById('current-progress');
 const progressContainer = document.getElementById('progress-container');
 const shuffleButton = document.getElementById('shuffle');
 const repeatButton = document.getElementById('repeat');
+const songTime = document.getElementById('song-time');
+const totalTime = document.getElementById('total-time');
 
 
 
@@ -88,9 +90,10 @@ function nextSong(){
     playSong();
 }
 
-function updateProgressBar(){
+function updateProgress(){
     const barWidht = (song.currentTime/song.duration)*100;
     currentProgress.style.setProperty('--progress', `${barWidht}%`);
+    songTime.innerText = toHHMMSS(song.currentTime);
 
 }
 
@@ -148,13 +151,27 @@ function nextOrRepeat(){
     }
 }
 
+function toHHMMSS(originalNumber) {
+    let hours = Math.floor(originalNumber/3600);
+    let min = Math.floor((originalNumber - hours * 3600)/60);
+    let secs = Math.floor(originalNumber - hours * 3600 - min * 60);
+
+    return `${hours.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+}
+
+function updateTotalTime() {
+    totalTime.innerText = toHHMMSS(song.duration);
+}
+
 initializeSong();
 
 play.addEventListener('click', playPauseDecider);
 previous.addEventListener('click', previousSong);
 next.addEventListener('click', nextSong);
-song.addEventListener('timeupdate', updateProgressBar);
+song.addEventListener('timeupdate', updateProgress);
 song.addEventListener('ended', nextOrRepeat);
+song.addEventListener('loadedmetadata', updateTotalTime);
 progressContainer.addEventListener('click', jumpTo);
 shuffleButton.addEventListener('click', shuffleButtonClicked);
 repeatButton.addEventListener('click', repeatButtonClicked);
